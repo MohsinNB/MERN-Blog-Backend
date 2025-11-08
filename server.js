@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 app.use("/api/v1/user", userroutes);
 
+//config
 dotenv.config();
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
