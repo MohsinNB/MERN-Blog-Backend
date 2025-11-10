@@ -33,7 +33,7 @@ export const registerUser = async (req, res) => {
         success: false,
         message: "Email already exist",
       });
-    }
+    } 
     const hashedPassword = await bcrypt.hash(password, 10);
     const data = await User.create({
       firstName,
