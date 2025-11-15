@@ -120,15 +120,23 @@ export const logOut = async (__, res) => {
 };
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req._id;
-    const { firstName, lastName, bio, instagram, facebook, linkedin, github } =
-      req.body;
+    const userId = req.id;
+    const {
+      firstName,
+      occupation,
+      lastName,
+      bio,
+      instagram,
+      facebook,
+      linkedin,
+      github,
+    } = req.body;
     const file = req.file;
     const fileUri = getDataUri(file);
     let cloudResponse = await cloudinary.uploader.upload(fileUri);
-    console.log(cloudResponse);
+    // console.log(cloudResponse);
 
-    const user = User.findById({ userId }).select("-password");
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -137,28 +145,16 @@ export const updateProfile = async (req, res) => {
     }
 
     // update data
-    if (firstName) {
-      user.firstName = firstName;
-    }
-    if (lastName) {
-      user.lastName = lastName;
-    }
-    if (instagram) {
-      user.instagram = instagram;
-    }
-    if (facebook) {
-      user.facebook = facebook;
-    }
-    if (github) {
-      user.github = github;
-    }
-    if (linkedin) {
-      user.linkedin = linkedin;
-    }
-    if (bio) {
-      user.bio = bio;
-    }
-    if (file) {
+    if (firstName) user.firstName = firstName;
+    if (occupation) user.occupation = occupation;
+    if (lastName) user.lastName = lastName;
+    if (instagram) user.instagram = instagram;
+    if (facebook) user.facebook = facebook;
+    if (github) user.github = github;
+    if (linkedin) user.linkedin = linkedin;
+    if (bio) user.bio = bio;
+
+    if (cloudResponse) {
       user.photoUrl = cloudResponse.secure_url;
     }
 
