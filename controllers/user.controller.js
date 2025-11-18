@@ -119,7 +119,6 @@ export const logOut = async (__, res) => {
   }
 };
 export const updateProfile = async (req, res) => {
-  console.log("It's an hello from initial");
   try {
     const userId = req.id;
     const {
@@ -174,6 +173,31 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update user",
+    });
+  }
+};
+
+export const getAllUser = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (!users) {
+      return res.status(200).json({
+        success: false,
+        message: "No user found",
+        users,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "All user reitrived successfully",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
     });
   }
 };
