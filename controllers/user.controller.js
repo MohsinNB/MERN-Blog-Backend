@@ -92,8 +92,8 @@ export const loginUser = async (req, res) => {
       .status(200)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpsOnly: true,
-        sameSite: "strict",
+        httpOnly: true,
+        sameSite: "lax",
       })
       .json({
         success: true,
@@ -131,10 +131,12 @@ export const updateProfile = async (req, res) => {
       linkedin,
       github,
     } = req.body;
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    let cloudResponse = await cloudinary.uploader.upload(fileUri);
-    // console.log(cloudResponse);
+    console.log("it's from req.body");
+    let cloudResponse = null;
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri);
+    }
 
     const user = await User.findById(userId).select("-password");
     if (!user) {
@@ -157,8 +159,10 @@ export const updateProfile = async (req, res) => {
     if (cloudResponse) {
       user.photoUrl = cloudResponse.secure_url;
     }
+    console.log("cloud Response as cloudinary working");
 
     await user.save();
+    console.log("user saved");
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
@@ -169,6 +173,31 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update user",
+    });
+  }
+};
+
+export const getAllUser = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (!users) {
+      return res.status(200).json({
+        success: false,
+        message: "No user found",
+        users,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "All user reitrived successfully",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
     });
   }
 };

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getAllUser,
   loginUser,
   logOut,
   registerUser,
@@ -14,4 +15,5 @@ userroutes.post("/register", registerUser);
 userroutes.post("/login", loginUser);
 userroutes.get("/logout", logOut);
 userroutes.put("/profile/update", isAuthenticated, singleUpload, updateProfile);
+userroutes.get("/all-users", isAuthenticated, getAllUser);
 export default userroutes;
