@@ -72,3 +72,39 @@ export const updateBlog = async (req, res) => {
     });
   }
 };
+
+export const getOwnBlog = async (req, res) => {
+  try {
+    const userId = req.id;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+
+    const blogs = await Blog.find({ author: userId }).populate({
+      // Blog.find({ author: userId }) this line means, go to Blog ebong amake oi sobgula blog find kore dao jegular author === userId  hobe.
+      path: "author",
+      select: "fitstName lastName photoUrl",
+    });
+    if (!blogs) {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found",
+        blogs: [],
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      blogs,
+      message: "Blog retrieved successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "failed to retreived blog",
+      error,
+    });
+  }
+};
