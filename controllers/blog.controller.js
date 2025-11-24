@@ -11,6 +11,7 @@ export const createBlog = async (req, res) => {
         message: "All fields required",
       });
     }
+    console.log("back");
     const blog = await Blog.create({
       title,
       category,
