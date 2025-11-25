@@ -190,6 +190,7 @@ export const publishToggleHandler = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `Blog is ${statusMessage}`,
+      blog,
     });
   } catch (error) {
     console.log(error);
@@ -197,5 +198,64 @@ export const publishToggleHandler = async (req, res) => {
       success: false,
       message: "Failed to get published blogs",
     });
+  }
+};
+export const likeBlog = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const personWhoLike = req.id; // logged-in user ID
+
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    // Check if user already liked
+    const alreadyLiked = blog.likes.includes(personWhoLike);
+
+    if (alreadyLiked) {
+      await blog.updateOne({ $pull: { likes: personWhoLike } });
+
+      return res.status(200).json({
+        success: true,
+        message: "Blog unliked",
+      });
+    } else {
+      await blog.updateOne({ $addToSet: { likes: personWhoLike } });
+
+      return res.status(200).json({
+        success: true,
+        message: "Blog liked",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getMytotalBlogLikes = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const myBlogs = await Blog.find({ author: userId }).select("likes");
+    const totalLikes = myBlogs.reduce(
+      (acc, blog) => acc + (blog.likes?.length || 0),
+      0
+    );
+
+    return res.status(200).json({
+      success: true,
+      totalBlogs: myBlogs.length,
+      totalLikes,
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
