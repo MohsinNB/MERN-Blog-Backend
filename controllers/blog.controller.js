@@ -86,7 +86,7 @@ export const getOwnBlog = async (req, res) => {
     const blogs = await Blog.find({ author: userId }).populate({
       // Blog.find({ author: userId }) this line means, go to Blog ebong amake oi sobgula blog find kore dao jegular author === userId  hobe.
       path: "author",
-      select: "fitstName lastName photoUrl",
+      select: "firstName lastName photoUrl",
     });
     if (!blogs) {
       return res.status(404).json({
@@ -105,6 +105,38 @@ export const getOwnBlog = async (req, res) => {
     res.status(500).json({
       message: "failed to retreived blog",
       error,
+    });
+  }
+};
+
+export const deleteBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const authorId = req.id;
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
+    }
+    if (blog.author.toString() !== authorId) {
+      return res.status(403).json({
+        sucess: false,
+        message: "Unauthorized to delete this blog",
+      });
+    }
+
+    //Delete blog
+    await Blog.findOneAndDelete(blogId);
+    res.status(200).json({
+      success: true,
+      message: `${blog.title} deleted successfully`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting blog",
+      error: error.message,
     });
   }
 };
