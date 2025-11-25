@@ -141,3 +141,61 @@ export const deleteBlog = async (req, res) => {
     });
   }
 };
+
+export const getPublishedBlog = async (__, res) => {
+  try {
+    const PublishedBlogs = await Blog.find({ isPublished: true })
+      .sort({
+        createdAt: -1,
+      })
+      .populate({ path: "author", select: "firstName lastName photoUrl" });
+
+    if (!PublishedBlogs) {
+      return res.status(404).json({
+        success: false,
+        message: "There is no blogs",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Successfully published your blogs",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get published blogs",
+    });
+  }
+};
+
+export const publishToggleHandler = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const { publish } = req.query;
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    // publish status based on query parameter
+    await blog.save();
+
+    const statusMessage = blog.isPublished ? "Published" : "Unpublished";
+
+    return res.status(200).json({
+      success: true,
+      message: `Blog is ${statusMessage}`,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get published blogs",
+    });
+  }
+};
