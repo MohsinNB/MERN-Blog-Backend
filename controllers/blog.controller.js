@@ -172,7 +172,6 @@ export const getPublishedBlog = async (__, res) => {
 export const publishToggleHandler = async (req, res) => {
   try {
     const { blogId } = req.params;
-    const { publish } = req.query;
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
@@ -183,6 +182,7 @@ export const publishToggleHandler = async (req, res) => {
     }
 
     // publish status based on query parameter
+    blog.isPublished = !blog.isPublished;
     await blog.save();
 
     const statusMessage = blog.isPublished ? "Published" : "Unpublished";
