@@ -202,42 +202,52 @@ export const publishToggleHandler = async (req, res) => {
 };
 export const likeBlog = async (req, res) => {
   try {
-    const { blogId } = req.params;
-    const personWhoLike = req.id; // logged-in user ID
-
-    const blog = await Blog.findById(blogId);
+    const blogId = req.params.id;
+    console.log("BlogId:", blogId);
+    const personWhoLiked = req.id;
+    console.log("personWhoLiked: ", personWhoLiked);
+    const blog = await Blog.findById(blogId).populate({ path: "likes" });
 
     if (!blog) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: "Blog not found",
       });
     }
-
-    // Check if user already liked
-    const alreadyLiked = blog.likes.includes(personWhoLike);
-
-    if (alreadyLiked) {
-      await blog.updateOne({ $pull: { likes: personWhoLike } });
-
-      return res.status(200).json({
-        success: true,
-        message: "Blog unliked",
-      });
-    } else {
-      await blog.updateOne({ $addToSet: { likes: personWhoLike } });
-
-      return res.status(200).json({
-        success: true,
-        message: "Blog liked",
-      });
-    }
+    await blog.updateOne({ $addToSet: { likes: personWhoLiked } });
+    await blog.save();
+    return res.status(200).json({
+      success: true,
+      message: "Blog Liked",
+      blog,
+    });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
+  }
+};
+export const disLikeBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    console.log("BlogId:", blogId);
+    const personWhoLiked = req.id;
+    console.log("personWhoLiked: ", personWhoLiked);
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+    await blog.updateOne({ $pull: { likes: personWhoLiked } });
+    await blog.save();
+    return res.status(200).json({
+      success: true,
+      message: "Blog DissLiked",
+      blog,
     });
+  } catch (error) {
+    console.log(error);
   }
 };
 
