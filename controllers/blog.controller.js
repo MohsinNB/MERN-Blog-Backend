@@ -57,7 +57,7 @@ export const updateBlog = async (req, res) => {
       description,
       category,
       author: req.id,
-      thumbnail: thumbnail.secure_url,
+      thumbnail: thumbnail?.secure_url,
     };
     blog = await Blog.findByIdAndUpdate(blogId, updatedData, { new: true });
     return res.status(201).json({
@@ -159,6 +159,7 @@ export const getPublishedBlog = async (__, res) => {
     return res.status(200).json({
       success: true,
       message: "Successfully published your blogs",
+      blogs: PublishedBlogs,
     });
   } catch (error) {
     console.log(error);
