@@ -179,7 +179,7 @@ export const updateProfile = async (req, res) => {
 
 export const getAllUser = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select("-password");
     if (!users) {
       return res.status(200).json({
         success: false,
@@ -190,6 +190,7 @@ export const getAllUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "All user reitrived successfully",
+      total: users.length,
       users,
     });
   } catch (error) {
