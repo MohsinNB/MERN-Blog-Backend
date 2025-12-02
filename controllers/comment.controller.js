@@ -58,7 +58,6 @@ export const getCommentsOfPost = async (req, res) => {
         select: "firstName lastName photoUrl",
       })
       .sort({ createdAt: -1 });
-    console.log("Comments from Backend comment controller: ", comments);
 
     if (!comments) {
       return res.status(404).json({
@@ -164,7 +163,6 @@ export const likeComment = async (req, res) => {
     const authorId = req.id;
 
     const comment = await Comment.findById(commentId).populate("userId");
-    console.log("from comment controller", comment);
 
     if (!comment) {
       return res.status(404).json({
