@@ -254,7 +254,7 @@ export const disLikeBlog = async (req, res) => {
 
 export const getMytotalBlogLikes = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.id;
     const myBlogs = await Blog.find({ author: userId }).select("likes");
     const totalLikes = myBlogs.reduce(
       (acc, blog) => acc + (blog.likes?.length || 0),
