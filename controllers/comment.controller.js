@@ -55,10 +55,9 @@ export const getCommentsOfPost = async (req, res) => {
     const comments = await Comment.find({ postId: blogId })
       .populate({
         path: "userId",
-        select: "firstName lastName photUrl",
+        select: "firstName lastName photoUrl",
       })
       .sort({ createdAt: -1 });
-    console.log("Comments from Backend comment controller: ", comments);
 
     if (!comments) {
       return res.status(404).json({
