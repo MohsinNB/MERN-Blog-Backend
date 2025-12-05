@@ -6,6 +6,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import blogRoutes from "./routes/blog.routes.js";
 import commentroutes from "./routes/comment.route.js";
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -19,7 +20,6 @@ app.use("/api/v1/user", userroutes);
 app.use("/api/v1/blog", blogRoutes);
 app.use("/api/v1/comment", commentroutes);
 
-dotenv.config();
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   connectDB();
