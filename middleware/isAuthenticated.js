@@ -22,6 +22,10 @@ export const isAuthenticated = async (req, res, next) => {
     req.id = decodedToken.userId;
     next();
   } catch (error) {
-    console.log(error);
+    console.log("Auth middleware error:", error);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token",
+    });
   }
 };

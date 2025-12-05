@@ -61,7 +61,7 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
@@ -69,31 +69,30 @@ export const loginUser = async (req, res) => {
 
     const getUser = await User.findOne({ email });
     if (!getUser) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "user does not exist. You have to sign up first",
       });
     }
     const isPasswordMatched = await bcrypt.compare(password, getUser.password);
     if (!isPasswordMatched) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "wrong Password",
       });
     }
 
-    const token = await jwt.sign(
-      { userId: getUser._id },
-      process.env.SECRET_KEY,
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ userId: getUser._id }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
 
     return res
       .status(200)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
       })
       .json({
         success: true,
